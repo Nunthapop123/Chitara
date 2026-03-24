@@ -57,3 +57,27 @@ From here, you can **Create, Read, Update, and Delete** any instance of the core
 - `Registered Users`
 - `Libraries`
 - `Generated Songs`
+
+## CRUD Operations Demonstration
+
+The Django Admin interface automatically provides full CRUD (Create, Read, Update, Delete) support for all domain models. Below is the demonstration of these operations in action:
+
+### 1. Create (Add)
+*Adding a new record to the database:*
+![Create Operation](images/create.png)
+(Create a new user "kasidet@hotmail.com" and "seenoi@hotmail.com")
+
+### 2. Read (View)
+*Viewing the list of existing records with search and filter capabilities:*
+![Read Operation](images/read.png)
+(Search for "kasidet" to find specific user)
+
+### 3. Update (Modify)
+*Modifying existing records (e.g., successfully updating Riccardo's generation count):*
+![Update Operation](images/update.png)
+(Update the email of the user "seenoi@hotmail.com" to "riccardo@hotmail.com" and the generation count from 12 to 8)
+
+### 4. Delete (Remove)
+*Selecting and removing records from the database:*
+![Delete Operation](images/delete.png)
+(Delete the user "kasidet@hotmail.com" from the database)
