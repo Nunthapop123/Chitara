@@ -5,6 +5,13 @@ from .registered_user import RegisteredUser
 
 
 class GeneratedSong(models.Model):
+    class GenerationStatus(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
+        TEXT_SUCCESS = 'TEXT_SUCCESS', 'Text Success'
+        FIRST_SUCCESS = 'FIRST_SUCCESS', 'First Success'
+        SUCCESS = 'SUCCESS', 'Success'
+        FAILED = 'FAILED', 'Failed'
+
     title = models.CharField(max_length=255)
     song_genre = models.CharField(
         max_length=20,
@@ -28,6 +35,16 @@ class GeneratedSong(models.Model):
     audio_url = models.CharField(
         max_length=2048,
         blank=True,
+    )
+    task_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=GenerationStatus.choices,
+        default=GenerationStatus.PENDING,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     library = models.ForeignKey(
