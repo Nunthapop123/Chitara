@@ -81,3 +81,33 @@ The Django Admin interface automatically provides full CRUD (Create, Read, Updat
 *Selecting and removing records from the database:*
 ![Delete Operation](images/delete.png)
 (Delete the user "kasidet@hotmail.com" from the database)
+
+## Song Generation Engine Configuration
+
+The application uses the **Strategy Pattern** to support interchangeable song generation implementations:
+- **Mock Strategy**: Offline, instant, deterministic results (ideal for development/testing)
+- **Suno API Strategy**: Real integration with api.sunoapi.org (requires API key)
+
+### Environment Variable Setup
+
+1. **Copy the example file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env`** in the project root (same directory as `manage.py`):
+   ```env
+   # Use 'mock' for mock offline/test generation
+   # Use 'suno' for real API (requires API key below)
+   # GENERATOR_STRATEGY=suno
+   
+   # Only needed if GENERATOR_STRATEGY=suno
+   # Get your key from: https://api.sunoapi.org/
+   SUNO_API_KEY=
+   ```
+
+3. **Install required packages:**
+   ```bash
+   pip install python-dotenv requests
+   ```
+
