@@ -8,9 +8,10 @@ class MockSongGeneratorStrategy(SongGeneratorStrategy):
     """Mock strategy that immediately returns success without external calls."""
 
     def generate(self, song: GeneratedSong) -> Dict[str, Any]:
+        """Simulates successfully creating a song instantly."""
+        song.audio_url = "https://www.myinstants.com/media/sounds/indian-song.mp3"
         song.status = GeneratedSong.GenerationStatus.SUCCESS
-        song.audio_url = 'https://example.com/mock-audio.mp3'
-        song.task_id = f'mock-task-{song.id}'
+        song.task_id = f"mock-task-{song.id}"
         song.save()
 
         return {
