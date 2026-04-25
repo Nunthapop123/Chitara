@@ -540,6 +540,7 @@ Open the newly created `.env` file and configure your specific variables:
 * **Music Engine Strategy (`GENERATOR_STRATEGY`):** You can toggle the backend engine between local testing and live generation:
   * Set it to `mock` to bypass the external API and generate an instant mock track (perfect for UI/UX testing without consuming credits).
   * Set it to `suno` to connect to the live AI model. **If you use this strategy, you MUST also provide a valid API token in the `SUNO_API_KEY` variable.**
+  * **Important:** After changing `GENERATOR_STRATEGY` in your `.env` file, you **must stop and restart the Django development server** for the new strategy to take effect. Additionally, perform a hard refresh (Cmd+Shift+R on macOS / Ctrl+Shift+R on Windows/Linux) in your browser to clear any cached assets.
 
 * **OAuth Setup (Google Login):** To enable Google Sign-In, follow these steps:
   1. Go to the [Google Cloud Console](https://console.cloud.google.com/) and create a new project.
