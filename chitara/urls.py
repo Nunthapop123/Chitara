@@ -16,9 +16,37 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from song_gen.views import suno_callback
+from django.conf import settings
+from django.conf.urls.static import static
+from song_gen.views import (
+    suno_callback, 
+    landing_view, 
+    login_view,
+    register_view,
+    logout_view,
+    library_view, 
+    generate_view, 
+    shared_song_view, 
+    delete_song_view,
+    generation_status_view,
+    song_status_api,
+    library_search_api
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/suno/callback/', suno_callback, name='suno_callback'),
-]
+    
+    # Frontend Routes
+    path('', landing_view, name='landing'),
+    path('login/', login_view, name='login'),
+    path('register/', register_view, name='register'),
+    path('logout/', logout_view, name='logout'),
+    path('library/', library_view, name='library'),
+    path('generate/', generate_view, name='generate'),
+    path('generation_status/<int:id>/', generation_status_view, name='generation_status'),
+    path('api/status/<int:id>/', song_status_api, name='song_status_api'),
+    path('api/library/search/', library_search_api, name='library_search_api'),
+    path('shared/<int:id>/', shared_song_view, name='shared_song'),
+    path('delete/<int:id>/', delete_song_view, name='delete_song'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

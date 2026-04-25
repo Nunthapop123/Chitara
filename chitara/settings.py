@@ -23,6 +23,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # Song Generation Engine Configuration
 GENERATOR_STRATEGY = os.getenv('GENERATOR_STRATEGY', 'mock')
 SUNO_API_KEY = os.getenv('SUNO_API_KEY', '')
+SITE_BASE_URL = (os.getenv('SITE_BASE_URL', '') or '').strip()
 
 
 # Quick-start development settings - unsuitable for production
@@ -125,6 +126,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
