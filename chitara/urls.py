@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from song_gen.views import (
@@ -49,4 +49,5 @@ urlpatterns = [
     path('api/library/search/', library_search_api, name='library_search_api'),
     path('shared/<int:id>/', shared_song_view, name='shared_song'),
     path('delete/<int:id>/', delete_song_view, name='delete_song'),
+    path('accounts/', include('allauth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

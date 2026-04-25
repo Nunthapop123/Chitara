@@ -36,8 +36,9 @@
             <hr style="flex: 1; border: none; border-top: 1px solid var(--border-color);">
         </div>
 
-        <!-- OAuth Placeholder -->
-        <a href="#" onclick="alert('OAuth will be connected in the next step!'); return false;" class="btn btn-outline" style="width: 100%; justify-content: center; font-size: 1.05rem; padding: 12px; margin-bottom: 0.5rem; border: 2px solid var(--border-color);">
+        <!-- OAuth Integration -->
+        {% load socialaccount %}
+        <a href="{% provider_login_url 'google' %}" class="btn btn-outline" style="width: 100%; justify-content: center; font-size: 1.05rem; padding: 12px; margin-bottom: 0.5rem; border: 2px solid var(--border-color);">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 20px; height: 20px;">
             Sign up with Google
         </a>
