@@ -1,0 +1,135 @@
+{% extends 'song_gen/base.html' %}
+{% load static %}
+
+{% block title %}Generate - Chitara{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto; padding-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h2>Create a New Song</h2>
+    </div>
+
+    <form id="generate-form" action="{% url 'generate' %}" method="POST" enctype="multipart/form-data" class="card">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label" for="id_title">Song Title</label>
+            <input type="text" name="title" id="id_title" class="form-control" placeholder="Name your masterpiece..." required>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="id_genre">Genre</label>
+            <select name="genre" id="id_genre" class="form-control" required>
+                <option value="" disabled selected>Select a genre...</option>
+                <option value="POP">Pop</option>
+                <option value="ROCK">Rock</option>
+                <option value="JAZZ">Jazz</option>
+                <option value="HIP_HOP">Hip-Hop</option>
+                <option value="CLASSICAL">Classical</option>
+                <option value="COUNTRY">Country</option>
+                <option value="RNB">R&B</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Singer Voice</label>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="singer" value="BOY" required> Boy
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="singer" value="GIRL" required> Girl
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="id_mood">Mood</label>
+            <input type="text" name="mood" id="id_mood" class="form-control" placeholder="e.g. Upbeat, Melancholic, Energetic" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="id_description">Description / Story (Optional)</label>
+            <textarea name="description" id="id_description" class="form-control" placeholder="Tell us the story or prompt for your song..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="id_cover">Song Cover (Optional)</label>
+            <input type="file" name="cover" id="id_cover" class="form-control" accept="image/*" style="padding: 9px 16px;">
+        </div>
+
+        <div style="text-align: right; margin-top: 2rem;">
+            <!-- This button does NOT submit the form directly. It triggers the modal via JS. -->
+            <button type="button" id="btn-next" class="btn btn-primary btn-lg" style="width: 100%; padding: 14px;">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- Include the Summary Modal -->
+{% include 'song_gen/summary_modal.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btnNext = document.getElementById('btn-next');
+    const modal = document.getElementById('summary-modal');
+    const btnCancel = document.getElementById('btn-cancel-modal');
+    const form = document.getElementById('generate-form');
+
+    if(btnNext && modal && form) {
+        btnNext.addEventListener('click', () => {
+            // Validate required fields before opening
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Populate Modal
+            document.getElementById('sum-title').textContent = document.getElementById('id_title').value || 'Untitled';
+            const genreLabels = {
+                POP: 'Pop',
+                ROCK: 'Rock',
+                JAZZ: 'Jazz',
+                HIP_HOP: 'Hip-Hop',
+                CLASSICAL: 'Classical',
+                COUNTRY: 'Country',
+                RNB: 'R&B'
+            };
+            const selectedGenre = document.getElementById('id_genre').value;
+            document.getElementById('sum-genre').textContent = genreLabels[selectedGenre] || selectedGenre || 'Not selected';
+            
+            const singerNodes = document.getElementsByName('singer');
+            let singer = 'Not selected';
+            for(let i=0; i<singerNodes.length; i++){
+                if(singerNodes[i].checked) singer = singerNodes[i].value;
+            }
+            document.getElementById('sum-singer').textContent = singer === 'BOY' ? 'Boy' : (singer === 'GIRL' ? 'Girl' : singer);
+            
+            document.getElementById('sum-mood').textContent = document.getElementById('id_mood').value || 'None';
+            
+            const desc = document.getElementById('id_description').value;
+            document.getElementById('sum-desc').textContent = desc ? desc : 'No description provided.';
+            
+            const fileInput = document.getElementById('id_cover');
+            document.getElementById('sum-cover').textContent = (fileInput.files.length > 0) ? fileInput.files[0].name : 'No image selected.';
+
+            // Show modal
+            modal.classList.add('active');
+        });
+        
+        btnCancel.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+        
+        // Optional: click outside to close
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

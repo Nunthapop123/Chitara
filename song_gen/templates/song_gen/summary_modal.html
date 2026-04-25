@@ -1,0 +1,54 @@
+<!-- Summary Modal Fragment -->
+<!-- Intended to be included into generate.html -->
+
+<div class="modal-overlay" id="summary-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm Details</h3>
+            <button class="btn-icon" id="btn-cancel-modal"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div style="margin-bottom: 2rem;">
+            <p class="text-muted" style="margin-bottom: 1.5rem;">Please review your generation parameters. This will consume 1 credit.</p>
+            
+            <div style="background-color: var(--bg-main); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="display: flex; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                    <span style="width: 120px; font-weight: 600; color: var(--text-muted);">Title:</span>
+                    <span id="sum-title" style="flex: 1; font-weight: 500;"></span>
+                </div>
+                
+                <div style="display: flex; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                    <span style="width: 120px; font-weight: 600; color: var(--text-muted);">Genre:</span>
+                    <span id="sum-genre" style="flex: 1; font-weight: 500;"></span>
+                </div>
+                
+                <div style="display: flex; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                    <span style="width: 120px; font-weight: 600; color: var(--text-muted);">Singer:</span>
+                    <span id="sum-singer" style="flex: 1; font-weight: 500;"></span>
+                </div>
+                
+                <div style="display: flex; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                    <span style="width: 120px; font-weight: 600; color: var(--text-muted);">Mood:</span>
+                    <span id="sum-mood" style="flex: 1; font-weight: 500;"></span>
+                </div>
+
+                <div style="display: flex; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                    <span style="width: 120px; font-weight: 600; color: var(--text-muted);">Cover Image:</span>
+                    <span id="sum-cover" style="flex: 1; font-weight: 500;"></span>
+                </div>
+                
+                <div style="display: flex;">
+                    <span style="width: 120px; font-weight: 600; color: var(--text-muted);">Story:</span>
+                    <div id="sum-desc" style="flex: 1; font-weight: 500; font-style: italic;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <!-- The actual form submitter -->
+            <button type="submit" form="generate-form" id="btn-final-generate" class="btn btn-primary" style="padding: 12px 24px;" onclick="setTimeout(function() { document.getElementById('btn-final-generate').disabled = true; document.getElementById('btn-final-generate').innerHTML = 'Starting...'; }, 10);">
+                <i class="fas fa-magic"></i> Confirm & Generate
+            </button>
+        </div>
+    </div>
+</div>

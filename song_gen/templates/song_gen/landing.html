@@ -1,0 +1,48 @@
+{% extends 'song_gen/base.html' %}
+{% load static %}
+
+{% block public_content %}
+<!-- Isle navigation for public page -->
+<nav class="landing-navbar">
+    <div class="brand landing-brand">
+        <i class="fas fa-guitar"></i> Chitara
+    </div>
+    <div class="landing-navbar-actions">
+        <a href="{% url 'login' %}" class="btn btn-outline landing-nav-link">Login</a>
+        <a href="{% url 'register' %}" class="btn btn-primary landing-nav-link">Sign Up</a>
+    </div>
+</nav>
+
+<div class="landing-wrapper" style="min-height: calc(100vh - 100px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem;">
+    <div class="hero-section text-center">
+        <h1 class="hero-title">Create AI Music in Seconds.</h1>
+        <p class="hero-subtitle">Turn your ideas into fully produced songs with the power of AI. Experience unlimited creativity with modern generation features.</p>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{% url 'login' %}" class="btn btn-primary" style="padding: 14px 32px; font-size: 1.1rem;">Start Generating</a>
+            <a href="{% url 'login' %}" class="btn btn-outline" style="padding: 14px 32px; font-size: 1.1rem;">Go to Library</a>
+        </div>
+    </div>
+
+    <div class="how-it-works card" style="max-width: 800px; width: 100%; margin-top: 4rem; text-align: center;">
+        <h2 style="margin-bottom: 2rem;">How It Works</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            <div>
+                <i class="fas fa-music" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h3>1. Choose Style</h3>
+                <p class="text-muted">Select your favorite genre, mood, and singer voice.</p>
+            </div>
+            <div>
+                <i class="fas fa-keyboard" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h3>2. Write Story</h3>
+                <p class="text-muted">Provide a short story or let the AI make one up.</p>
+            </div>
+            <div>
+                <i class="fas fa-play-circle" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h3>3. Generate</h3>
+                <p class="text-muted">Listen to your custom song instantly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

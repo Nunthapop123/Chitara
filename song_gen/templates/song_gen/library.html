@@ -1,0 +1,181 @@
+{% extends 'song_gen/base.html' %}
+{% load static %}
+
+{% block title %}Library - Chitara{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Your Library</h2>
+    
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" id="lib-search" placeholder="Search songs...">
+    </div>
+</div>
+
+<div class="song-list" id="song-list">
+    <!-- Assuming a Django context variable 'songs' which is already ordered by most recent -->
+    {% for song in songs %}
+    <div class="song-row" data-song-id="{{ song.id }}" data-title="{{ song.title|lower }}">
+        <img src="{% if song.cover_image_url %}{{ song.cover_image_url }}{% else %}data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%236c7d36%22%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2255%22%20font-family%3D%22sans-serif%22%20font-size%3D%2240%22%20fill%3D%22white%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E%E2%99%AB%3C%2Ftext%3E%3C%2Fsvg%3E{% endif %}" class="song-row-cover" alt="Cover">
+        
+        <div class="song-row-details">
+            <div class="song-row-title" style="display: flex; align-items: center; gap: 10px;">
+                {{ song.title|default:"Untitled Track" }}
+                {% if song.status == 'PENDING' or song.status == 'TEXT_SUCCESS' or song.status == 'FIRST_SUCCESS' %}
+                    <span style="font-size: 0.75rem; background: var(--primary); color: #000; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-spinner fa-spin"></i> Generating...
+                    </span>
+                {% elif song.status == 'FAILED' %}
+                    <span style="font-size: 0.75rem; background: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-exclamation-triangle"></i> Failed
+                    </span>
+                {% endif %}
+            </div>
+            <div class="song-row-creator">{{ song.generated_by.email|default:"Unknown Creator" }}</div>
+        </div>
+
+        <div class="song-row-actions">
+            <!-- View Params Button -->
+            <a href="{% url 'shared_song' song.id %}" class="btn btn-outline btn-sm" title="View Generation Params">
+                <i class="fas fa-info-circle"></i> Params
+            </a>
+            
+            <!-- Play Button (Injects data into global player) -->
+            <!-- We assume song.audio_file is the URL to the mp3 -->
+            {% if song.audio_url %}
+            <button class="btn btn-primary btn-sm js-play-song" title="Play Song"
+               data-url="{{ song.audio_url }}"
+               data-title="{{ song.title|escapejs }}"
+               data-creator="{{ song.generated_by.email|escapejs }}"
+               data-cover="{% if song.cover_image_url %}{{ song.cover_image_url }}{% else %}data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%236c7d36%22%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2255%22%20font-family%3D%22sans-serif%22%20font-size%3D%2240%22%20fill%3D%22white%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E%E2%99%AB%3C%2Ftext%3E%3C%2Fsvg%3E{% endif %}">
+                <i class="fas fa-play"></i> Play
+            </button>
+            {% else %}
+            <button class="btn btn-primary btn-sm" title="Unavailable" style="opacity: 0.5; cursor: not-allowed;" disabled>
+                <i class="fas fa-play"></i> Play
+            </button>
+            {% endif %}
+            
+            <!-- Download Button -->
+            {% if song.audio_url %}
+            <a href="{{ song.audio_url }}" download class="btn-icon" title="Download MP3" style="font-size: 1.1rem; padding: 6px;">
+                <i class="fas fa-download"></i>
+            </a>
+            {% endif %}
+
+            <!-- Share Button -->
+            <!-- Assumption: A URL setup exists like /shared/<id>/ -->
+            <button class="btn-icon copy-share-btn" data-url="{% if song.share_url %}{{ song.share_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% url 'shared_song' song.id %}{% endif %}" title="Copy Link" style="font-size: 1.1rem; padding: 6px;">
+                <i class="fas fa-share-alt"></i>
+            </button>
+
+            <!-- Delete Form/Button (Custom confirm modal) -->
+            <form action="{% url 'delete_song' song.id %}" method="POST" style="margin:0; padding:0; display:inline;" class="delete-song-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-icon delete-song-btn" title="Delete Song" data-song-title="{{ song.title|escapejs }}" style="color: #ef4444; font-size: 1.1rem; padding: 6px;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+        <i class="fas fa-music" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+        <h3>No songs yet</h3>
+        <p>Your generated masterpeices will appear here.</p>
+        <a href="{% url 'generate' %}" class="btn btn-primary" style="margin-top: 1.5rem;">Create Your First Song</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Search Functionality
+    const searchInput = document.getElementById('lib-search');
+    const songRows = document.querySelectorAll('.song-row');
+    const searchApiUrl = "{% url 'library_search_api' %}";
+    let searchTimer;
+
+    // Build queue for global player controls.
+    const playBtns = document.querySelectorAll('.js-play-song');
+    const playlist = [];
+    playBtns.forEach(btn => {
+        const track = {
+            url: btn.getAttribute('data-url'),
+            title: btn.getAttribute('data-title') || 'Unknown Song',
+            creator: btn.getAttribute('data-creator') || '',
+            coverUrl: btn.getAttribute('data-cover') || ''
+        };
+        playlist.push(track);
+        btn.addEventListener('click', () => {
+            window.playSong(track.url, track.title, track.creator, track.coverUrl);
+        });
+    });
+    if (window.setPlaylist) {
+        window.setPlaylist(playlist);
+    }
+
+    if(searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.trim();
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(async () => {
+                try {
+                    const response = await fetch(`${searchApiUrl}?q=${encodeURIComponent(term)}`);
+                    const data = await response.json();
+                    const visibleIds = new Set((data.song_ids || []).map(id => String(id)));
+                    songRows.forEach(row => {
+                        row.style.display = visibleIds.has(row.getAttribute('data-song-id')) ? 'flex' : 'none';
+                    });
+                } catch (err) {
+                    console.error('Search failed:', err);
+                }
+            }, 180);
+        });
+    }
+
+    // Share Button Functionality
+    const shareBtns = document.querySelectorAll('.copy-share-btn');
+    shareBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const url = btn.getAttribute('data-url');
+            navigator.clipboard.writeText(url).then(() => {
+                const icon = btn.querySelector('i');
+                icon.className = 'fas fa-check';
+                icon.style.color = 'var(--primary)';
+                setTimeout(() => {
+                    icon.className = 'fas fa-share-alt';
+                    icon.style.color = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+    });
+
+    const deleteForms = document.querySelectorAll('.delete-song-form');
+    deleteForms.forEach(form => {
+        const deleteBtn = form.querySelector('.delete-song-btn');
+        if (!deleteBtn) return;
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const title = deleteBtn.getAttribute('data-song-title') || 'this song';
+            if (window.openConfirmDialog) {
+                window.openConfirmDialog({
+                    title: 'Delete song?',
+                    message: `Are you sure you want to delete "${title}"?`,
+                    confirmText: 'Delete',
+                    onConfirm: () => form.submit()
+                });
+            } else {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'song_gen/base.html' %}
+{% load static %}
+
+{% block title %}Generating | Chitara{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; text-align: center;">
+    
+    <div id="status-container" class="card" style="padding: 3rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 500px; width: 100%;">
+        
+        <!-- Spinning animation wrapper -->
+        <div id="loader-wrapper" style="margin-bottom: 2rem; position: relative; width: 100px; height: 100px; margin: 0 auto 2rem auto;">
+            <svg class="spinner" viewBox="0 0 50 50" style="animation: rotate 2s linear infinite; width: 100px; height: 100px; color: var(--primary);">
+                <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="4" style="stroke: currentColor; stroke-linecap: round; animation: dash 1.5s ease-in-out infinite;"></circle>
+            </svg>
+            <style>
+                @keyframes rotate { 100% { transform: rotate(360deg); } }
+                @keyframes dash {
+                    0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+                    50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+                    100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+                }
+            </style>
+        </div>
+
+        <h2 id="status-title" style="margin-bottom: 1rem; color: var(--text-color);">Crafting your masterpiece...</h2>
+        <p id="status-desc" class="text-muted" style="margin-bottom: 2rem;">This might take a minute depending on the current queue. Hang tight!</p>
+        
+        <div id="song-info" style="background: var(--bg-main); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 2rem; text-align: left;">
+            <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-color);">{{ song.title }}</div>
+            <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+                <span style="display: inline-block; background: var(--bg-card); border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 4px; margin-right: 8px;">{{ song.song_genre|title }}</span>
+                <span style="display: inline-block; background: var(--bg-card); border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 4px; margin-right: 8px;">{{ song.mood|title }}</span>
+                <span>Voice: {{ song.singer_choice|title }}</span>
+            </div>
+            {% if song.description %}
+            <div style="font-size: 0.9rem; color: var(--text-color); background: rgba(0,0,0,0.02); padding: 10px; border-radius: 6px; border-left: 3px solid var(--primary); font-style: italic;">
+                "{{ song.description }}"
+            </div>
+            {% endif %}
+        </div>
+
+        <div id="action-wrapper" style="display: none;">
+            <a href="{% url 'library' %}" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px;">Go to Library</a>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const songId = "{{ song.id }}";
+        const apiUrl = "{% url 'song_status_api' id=0 %}".replace('/0/', '/' + songId + '/');
+        
+        const loaderWrapper = document.getElementById('loader-wrapper');
+        const statusTitle = document.getElementById('status-title');
+        const statusDesc = document.getElementById('status-desc');
+        const actionWrapper = document.getElementById('action-wrapper');
+        
+        let pollInterval;
+        
+        const handleStatus = (status) => {
+            if (status === 'SUCCESS') {
+                clearInterval(pollInterval);
+                loaderWrapper.innerHTML = '<i class="fas fa-check-circle" style="font-size: 80px; color: #10b981;"></i>';
+                statusTitle.textContent = "Song Generated Successfully!";
+                statusDesc.textContent = "Your track is officially ready to jam out to.";
+                actionWrapper.style.display = "block";
+            } else if (status === 'FAILED') {
+                clearInterval(pollInterval);
+                loaderWrapper.innerHTML = '<i class="fas fa-exclamation-circle" style="font-size: 80px; color: #ef4444;"></i>';
+                statusTitle.textContent = "Generation Failed";
+                statusDesc.textContent = "We ran into an error generating this track. The generator may have timed out.";
+                actionWrapper.style.display = "block";
+            }
+            // Other temporary statuses (PENDING, FIRST_SUCCESS, TEXT_SUCCESS) continue polling
+        };
+        
+        // Initial state logic based on page load state
+        const initialStatus = "{{ song.status }}";
+        if (initialStatus === 'SUCCESS' || initialStatus === 'FAILED') {
+            handleStatus(initialStatus);
+        } else {
+            // Start polling every 3 seconds
+            pollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(apiUrl);
+                    const data = await res.json();
+                    
+                    if(data.status) {
+                        handleStatus(data.status);
+                    }
+                } catch(e) {
+                    console.error("Polling error: ", e);
+                }
+            }, 3000);
+        }
+    });
+</script>
+{% endblock %}
