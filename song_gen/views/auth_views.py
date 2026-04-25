@@ -22,6 +22,7 @@ def login_view(request):
             user = None
 
         if user is not None:
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth_login(request, user)
             return redirect('library')
 
@@ -42,6 +43,7 @@ def register_view(request):
             messages.error(request, 'Username or Email already registered.')
         else:
             user = User.objects.create_user(username=username, email=email, password=password)
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth_login(request, user)
 
             reg_user, _ = RegisteredUser.objects.get_or_create(email=email)
